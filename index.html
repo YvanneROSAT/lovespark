@@ -44,6 +44,12 @@
       text-align: center;
       width: 100%;
       max-width: 500px;
+      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    #form-screen.fade-out {
+      opacity: 0;
+      transform: scale(0.95) translateY(-20px);
     }
 
     #form-screen .card {
@@ -87,13 +93,13 @@
       color: #fff;
       text-align: center;
       outline: none;
-      transition: border-color 0.3s, box-shadow 0.3s;
+      transition: border-color 0.4s cubic-bezier(0.4,0,0.2,1), box-shadow 0.4s cubic-bezier(0.4,0,0.2,1);
     }
 
     #name-input::placeholder { color: rgba(255,255,255,0.25); }
     #name-input:focus {
       border-color: rgba(224,195,252,0.5);
-      box-shadow: 0 0 20px rgba(224,195,252,0.15);
+      box-shadow: 0 0 25px rgba(224,195,252,0.15);
     }
 
     #submit-btn {
@@ -106,15 +112,15 @@
       background: linear-gradient(135deg, #e0c3fc, #f5d5e0, #ffddb7);
       color: #1a1a2e;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s cubic-bezier(0.4,0,0.2,1);
     }
 
     #submit-btn:hover {
       transform: scale(1.05);
-      box-shadow: 0 10px 30px rgba(224,195,252,0.3);
+      box-shadow: 0 10px 40px rgba(224,195,252,0.35);
     }
 
-    /* ---- MAIN SCREEN (hidden by default) ---- */
+    /* ---- MAIN SCREEN ---- */
     #main-screen {
       display: none;
       position: relative;
@@ -122,6 +128,32 @@
       text-align: center;
       width: 100%;
       max-width: 600px;
+      opacity: 0;
+      transform: scale(0.9) translateY(20px);
+      transition: opacity 0.8s cubic-bezier(0.4,0,0.2,1), transform 0.8s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    #main-screen.fade-in {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+
+    /* Halo lumineux derriere la carte */
+    #main-screen::before {
+      content: "";
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 120%; height: 120%;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(ellipse, rgba(224,195,252,0.08) 0%, transparent 70%);
+      animation: haloPulse 4s cubic-bezier(0.4,0,0.6,1) infinite;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    @keyframes haloPulse {
+      0%, 100% { opacity: 0.5; transform: translate(-50%,-50%) scale(1); }
+      50% { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
     }
 
     #main-screen .card {
@@ -138,13 +170,6 @@
       box-shadow: 0 25px 60px rgba(0,0,0,0.3);
       z-index: 2;
       position: relative;
-      animation: cardAppear 1s ease-out forwards;
-      opacity: 0;
-      transform: scale(0.8);
-    }
-
-    @keyframes cardAppear {
-      to { opacity: 1; transform: scale(1); }
     }
 
     #main-screen h1 {
@@ -162,7 +187,7 @@
       width: 100%;
     }
 
-    #main-screen p {
+    #main-screen .sub {
       font-style: italic;
       color: rgba(255,255,255,0.55);
       font-size: clamp(0.85rem, 2.5vw, 1.15rem);
@@ -171,38 +196,73 @@
       width: 100%;
     }
 
-    /* ---- HEARTS ---- */
+    #main-screen .message {
+      margin-top: 1.8rem;
+      color: rgba(255,255,255,0.50);
+      font-style: italic;
+      line-height: 1.8;
+      font-size: clamp(0.8rem, 2.2vw, 1.05rem);
+      width: 100%;
+    }
+
+    .message .word {
+      display: inline-block;
+      opacity: 0;
+      transform: translateY(8px);
+      animation: wordFadeIn 0.4s cubic-bezier(0.4,0,0.2,1) forwards;
+    }
+
+    @keyframes wordFadeIn {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---- HEARTS (smooth Apple-style) ---- */
     @keyframes fall {
-      0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
-      10% { opacity: 1; }
-      90% { opacity: 1; }
-      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+      0% { transform: translateY(-5vh) rotate(0deg) scale(0.8); opacity: 0; }
+      8% { opacity: 1; transform: translateY(0) rotate(5deg) scale(1); }
+      92% { opacity: 0.8; }
+      100% { transform: translateY(105vh) rotate(25deg) scale(0.9); opacity: 0; }
     }
     @keyframes sway {
       0%, 100% { margin-left: 0; }
-      25% { margin-left: 30px; }
-      75% { margin-left: -30px; }
+      50% { margin-left: 20px; }
     }
     .heart {
       position: fixed;
       top: -5vh;
-      animation: fall linear infinite, sway 3s ease-in-out infinite;
+      animation: fall cubic-bezier(0.4,0,0.6,1) infinite, sway cubic-bezier(0.4,0,0.6,1) infinite;
       pointer-events: none;
       z-index: 0;
       user-select: none;
+      will-change: transform, opacity;
+    }
+
+    /* ---- STARS (flottantes) ---- */
+    @keyframes starFloat {
+      0%, 100% { transform: translateY(0) scale(1); opacity: 0.3; }
+      50% { transform: translateY(-15px) scale(1.2); opacity: 0.7; }
+    }
+    .star {
+      position: fixed;
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      animation: starFloat cubic-bezier(0.4,0,0.6,1) infinite;
+      will-change: transform, opacity;
     }
 
     /* ---- DOTS ---- */
     .dot {
-      position: absolute;
+      position: fixed;
       border-radius: 50%;
       pointer-events: none;
       opacity: 0;
-      animation: dotPulse 4s ease-in-out infinite;
+      animation: dotPulse 5s cubic-bezier(0.4,0,0.6,1) infinite;
+      will-change: transform, opacity;
     }
     @keyframes dotPulse {
       0%, 100% { opacity: 0; transform: scale(0.5); }
-      50% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1); }
     }
 
     /* ---- SPARKLES ---- */
@@ -211,57 +271,30 @@
       pointer-events: none;
       z-index: 100;
       font-size: 1.5rem;
-      animation: sparkleAnim 0.8s ease-out forwards;
+      animation: sparkleAnim 1.2s cubic-bezier(0.4,0,0.2,1) forwards;
+      will-change: transform, opacity;
     }
     @keyframes sparkleAnim {
-      0% { opacity: 1; transform: translate(0,0) scale(1); }
-      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
+      0% { opacity: 1; transform: translate(0,0) scale(1) rotate(0deg); }
+      60% { opacity: 0.8; }
+      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0) rotate(180deg); }
     }
 
     /* ---- RESPONSIVE ---- */
     @media (max-width: 768px) {
-      #form-screen .card {
-        padding: 2rem 1.5rem;
-        margin: 0 1rem;
-        border-radius: 1.5rem;
-      }
-      #form-screen h2 { font-size: 2rem; }
+      #form-screen .card { padding: 2rem 1.5rem; margin: 0 1rem; border-radius: 1.5rem; }
       #form-screen p { font-size: 0.85rem; margin-bottom: 1.5rem; }
       #name-input { padding: 0.8rem 1rem; font-size: 1rem; }
       #submit-btn { padding: 0.7rem 2rem; font-size: 1.3rem; }
-
-      #main-screen .card {
-        padding: 2.5rem 1.5rem;
-        margin: 0 1rem;
-        border-radius: 1.5rem;
-      }
-      #main-screen h1 { font-size: 3rem; }
-      #main-screen p { font-size: 0.95rem; }
+      #main-screen .card { padding: 2.5rem 1.5rem; margin: 0 1rem; border-radius: 1.5rem; }
     }
 
     @media (max-width: 480px) {
-      #form-screen .card {
-        padding: 1.8rem 1.2rem;
-        margin: 0 0.75rem;
-        border-radius: 1.2rem;
-      }
-      #form-screen h2 { font-size: 1.6rem; }
+      #form-screen .card { padding: 1.8rem 1.2rem; margin: 0 0.75rem; border-radius: 1.2rem; }
       #form-screen p { font-size: 0.8rem; margin-bottom: 1.2rem; }
       #name-input { padding: 0.7rem 0.8rem; font-size: 0.9rem; border-radius: 0.8rem; }
       #submit-btn { padding: 0.6rem 1.5rem; font-size: 1.1rem; border-radius: 0.8rem; }
-
-      #main-screen .card {
-        padding: 2rem 1.2rem;
-        margin: 0 0.75rem;
-        border-radius: 1.2rem;
-      }
-      #main-screen h1 { font-size: 2.2rem; }
-      #main-screen p { font-size: 0.85rem; }
-    }
-
-    @media (max-width: 360px) {
-      #main-screen h1 { font-size: 1.8rem; }
-      #form-screen h2 { font-size: 1.4rem; }
+      #main-screen .card { padding: 2rem 1.2rem; margin: 0 0.75rem; border-radius: 1.2rem; }
     }
   </style>
 </head>
@@ -282,8 +315,8 @@
   <div id="main-screen">
     <div class="card">
       <h1 id="love-text"></h1>
-      <p id="sub-text"></p>
-      <p id="message-text" style="margin-top:1.8rem; color:rgba(255,255,255,0.50); font-style:italic; line-height:1.7; font-size:clamp(0.8rem, 2.2vw, 1.05rem);"></p>
+      <p class="sub" id="sub-text"></p>
+      <p class="message" id="message-text"></p>
     </div>
   </div>
 
@@ -298,7 +331,6 @@
 
     const loveMessage = "Tout ce que tu fais en silence, ces efforts que personne ne voit, sache que quelqu'un les voit. Quelque part, il y a une personne qui tient a toi et qui souhaite ton bonheur. Cette personne, c'est celle qui t'envoie ce lien. Tu comptes plus que tu ne le crois.";
 
-    // Allow Enter key
     nameInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") launch();
     });
@@ -307,14 +339,16 @@
     // Check localStorage on load
     const savedName = localStorage.getItem("love_prenom");
     if (savedName) {
-      // Auto-launch with saved name
       formScreen.style.display = "none";
       mainScreen.style.display = "block";
+      mainScreen.offsetHeight; // force reflow
+      mainScreen.classList.add("fade-in");
       loveText.textContent = "Je t'aime " + savedName;
       subText.textContent = "Cette page est pour toi, " + savedName + ".";
-      messageText.textContent = loveMessage;
+      revealWords(loveMessage);
       document.title = "Je t'aime " + savedName;
       spawnHearts();
+      spawnStars();
       spawnDots();
     }
 
@@ -322,10 +356,8 @@
       const name = nameInput.value.trim();
       if (!name) { nameInput.focus(); return; }
 
-      // Capitalize first letter
       const pretty = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 
-      // Check if a name is already saved
       const existing = localStorage.getItem("love_prenom");
       if (existing && existing !== pretty) {
         nameInput.value = "";
@@ -340,63 +372,92 @@
         return;
       }
 
-      // Save to localStorage
       localStorage.setItem("love_prenom", pretty);
 
-      // Set text
       loveText.textContent = "Je t'aime " + pretty;
       subText.textContent = "Cette page est pour toi, " + pretty + ".";
-      messageText.textContent = loveMessage;
       document.title = "Je t'aime " + pretty;
 
-      // Transition
-      formScreen.style.display = "none";
-      mainScreen.style.display = "block";
+      // Smooth transition: fade out form, then fade in main
+      formScreen.classList.add("fade-out");
+      setTimeout(() => {
+        formScreen.style.display = "none";
+        mainScreen.style.display = "block";
+        mainScreen.offsetHeight;
+        mainScreen.classList.add("fade-in");
 
-      // SPARKLES EXPLOSION
-      spawnSparkles(window.innerWidth / 2, window.innerHeight / 2, 60);
+        spawnSparkles(window.innerWidth / 2, window.innerHeight / 2, 60);
 
-      // Start hearts
-      spawnHearts();
+        // Reveal message word by word after card appears
+        setTimeout(() => revealWords(loveMessage), 600);
 
-      // Start dots
-      spawnDots();
+        spawnHearts();
+        spawnStars();
+        spawnDots();
+      }, 600);
+    }
+
+    // ---- WORD BY WORD REVEAL ----
+    function revealWords(text) {
+      const words = text.split(" ");
+      messageText.innerHTML = "";
+      words.forEach((word, i) => {
+        const span = document.createElement("span");
+        span.className = "word";
+        span.textContent = word + "\u00A0";
+        span.style.animationDelay = (i * 0.06) + "s";
+        messageText.appendChild(span);
+      });
     }
 
     // ---- SPARKLES ----
     function spawnSparkles(cx, cy, count) {
-      const emojis = ["\u2728", "\uD83D\uDCAB", "\u2B50", "\u2764\uFE0F", "\uD83D\uDC96", "\u2763\uFE0F", "\uD83C\uDF1F"];
+      const emojis = ["\u2728", "\uD83D\uDCAB", "\u2B50", "\uD83D\uDC96", "\u2763\uFE0F", "\uD83C\uDF1F", "\uD83E\uDD0D"];
       for (let i = 0; i < count; i++) {
         const el = document.createElement("div");
         el.className = "sparkle";
         el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
         const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
-        const dist = 80 + Math.random() * 250;
-        const dx = Math.cos(angle) * dist;
-        const dy = Math.sin(angle) * dist;
+        const dist = 80 + Math.random() * 280;
         el.style.left = cx + "px";
         el.style.top = cy + "px";
-        el.style.setProperty("--dx", dx + "px");
-        el.style.setProperty("--dy", dy + "px");
+        el.style.setProperty("--dx", Math.cos(angle) * dist + "px");
+        el.style.setProperty("--dy", Math.sin(angle) * dist + "px");
         el.style.fontSize = (1 + Math.random() * 1.5) + "rem";
-        el.style.animationDuration = (0.6 + Math.random() * 0.6) + "s";
+        el.style.animationDuration = (0.8 + Math.random() * 0.8) + "s";
         document.body.appendChild(el);
-        setTimeout(() => el.remove(), 1500);
+        setTimeout(() => el.remove(), 2000);
       }
     }
 
-    // ---- HEARTS ----
+    // ---- HEARTS (smooth, slow, Apple-like) ----
     function spawnHearts() {
       const hearts = ["\u2764\uFE0F", "\uD83E\uDD0D", "\uD83D\uDC95", "\uD83D\uDC96", "\uD83D\uDC97", "\uD83D\uDC9C", "\uD83E\uDE77", "\uD83D\uDC9B"];
-      for (let i = 0; i < 35; i++) {
+      for (let i = 0; i < 25; i++) {
         const el = document.createElement("div");
         el.className = "heart";
         el.textContent = hearts[Math.floor(Math.random() * hearts.length)];
         el.style.left = Math.random() * 100 + "vw";
-        el.style.fontSize = (0.8 + Math.random() * 1.5) + "rem";
-        el.style.animationDuration = (6 + Math.random() * 8) + "s, " + (2 + Math.random() * 3) + "s";
-        el.style.animationDelay = (Math.random() * 5) + "s, " + (Math.random() * 3) + "s";
-        el.style.opacity = 0.4 + Math.random() * 0.6;
+        el.style.fontSize = (0.7 + Math.random() * 1) + "rem";
+        el.style.animationDuration = (12 + Math.random() * 10) + "s, " + (4 + Math.random() * 4) + "s";
+        el.style.animationDelay = (Math.random() * 8) + "s, " + (Math.random() * 4) + "s";
+        el.style.opacity = 0.25 + Math.random() * 0.4;
+        document.body.appendChild(el);
+      }
+    }
+
+    // ---- STARS (floating gently) ----
+    function spawnStars() {
+      const stars = ["\u2728", "\u2B50", "\uD83C\uDF1F", "\u00B7"];
+      for (let i = 0; i < 20; i++) {
+        const el = document.createElement("div");
+        el.className = "star";
+        el.textContent = stars[Math.floor(Math.random() * stars.length)];
+        el.style.left = Math.random() * 100 + "vw";
+        el.style.top = Math.random() * 100 + "vh";
+        el.style.fontSize = (0.5 + Math.random() * 0.8) + "rem";
+        el.style.animationDuration = (5 + Math.random() * 6) + "s";
+        el.style.animationDelay = (Math.random() * 5) + "s";
         document.body.appendChild(el);
       }
     }
@@ -404,21 +465,21 @@
     // ---- DOTS ----
     function spawnDots() {
       const colors = [
-        "rgba(168,85,247,0.6)", "rgba(236,72,153,0.5)", "rgba(59,130,246,0.5)",
-        "rgba(224,195,252,0.4)", "rgba(245,213,224,0.4)", "rgba(255,221,183,0.4)",
-        "rgba(147,51,234,0.5)", "rgba(251,146,60,0.4)"
+        "rgba(168,85,247,0.5)", "rgba(236,72,153,0.4)", "rgba(59,130,246,0.4)",
+        "rgba(224,195,252,0.3)", "rgba(245,213,224,0.3)", "rgba(255,221,183,0.3)",
+        "rgba(147,51,234,0.4)", "rgba(251,146,60,0.3)"
       ];
-      for (let i = 0; i < 40; i++) {
+      for (let i = 0; i < 30; i++) {
         const dot = document.createElement("div");
         dot.classList.add("dot");
-        const size = Math.random() * 12 + 4;
+        const size = Math.random() * 10 + 3;
         dot.style.width = size + "px";
         dot.style.height = size + "px";
         dot.style.left = Math.random() * 100 + "vw";
         dot.style.top = Math.random() * 100 + "vh";
         dot.style.background = colors[Math.floor(Math.random() * colors.length)];
-        dot.style.animationDelay = (Math.random() * 4) + "s";
-        dot.style.animationDuration = (Math.random() * 3 + 3) + "s";
+        dot.style.animationDelay = (Math.random() * 5) + "s";
+        dot.style.animationDuration = (4 + Math.random() * 4) + "s";
         dot.style.boxShadow = "0 0 " + (size * 2) + "px " + dot.style.background;
         document.body.appendChild(dot);
       }
