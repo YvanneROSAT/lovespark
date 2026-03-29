@@ -198,6 +198,52 @@
       0% { opacity: 1; transform: translate(0,0) scale(1); }
       100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
     }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 768px) {
+      #form-screen .card {
+        padding: 2rem 1.5rem;
+        margin: 0 1rem;
+        border-radius: 1.5rem;
+      }
+      #form-screen h2 { font-size: 2rem; }
+      #form-screen p { font-size: 0.85rem; margin-bottom: 1.5rem; }
+      #name-input { padding: 0.8rem 1rem; font-size: 1rem; }
+      #submit-btn { padding: 0.7rem 2rem; font-size: 1.3rem; }
+
+      #main-screen .card {
+        padding: 2.5rem 1.5rem;
+        margin: 0 1rem;
+        border-radius: 1.5rem;
+      }
+      #main-screen h1 { font-size: 3rem; }
+      #main-screen p { font-size: 0.95rem; }
+    }
+
+    @media (max-width: 480px) {
+      #form-screen .card {
+        padding: 1.8rem 1.2rem;
+        margin: 0 0.75rem;
+        border-radius: 1.2rem;
+      }
+      #form-screen h2 { font-size: 1.6rem; }
+      #form-screen p { font-size: 0.8rem; margin-bottom: 1.2rem; }
+      #name-input { padding: 0.7rem 0.8rem; font-size: 0.9rem; border-radius: 0.8rem; }
+      #submit-btn { padding: 0.6rem 1.5rem; font-size: 1.1rem; border-radius: 0.8rem; }
+
+      #main-screen .card {
+        padding: 2rem 1.2rem;
+        margin: 0 0.75rem;
+        border-radius: 1.2rem;
+      }
+      #main-screen h1 { font-size: 2.2rem; }
+      #main-screen p { font-size: 0.85rem; }
+    }
+
+    @media (max-width: 360px) {
+      #main-screen h1 { font-size: 1.8rem; }
+      #form-screen h2 { font-size: 1.4rem; }
+    }
   </style>
 </head>
 <body>
