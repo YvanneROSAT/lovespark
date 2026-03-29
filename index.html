@@ -3,14 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aaron</title>
+  <title>Je t'aime</title>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Lora:ital@0;1&display=swap" rel="stylesheet">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       min-height: 100vh;
@@ -20,39 +16,124 @@
       background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
       overflow: hidden;
       position: relative;
+      font-family: "Lora", serif;
     }
 
     body::before {
       content: "";
       position: absolute;
-      top: -50%;
-      left: -50%;
-      width: 200%;
-      height: 200%;
-      background: radial-gradient(circle at 30% 40%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
-                  radial-gradient(circle at 70% 60%, rgba(236, 72, 153, 0.12) 0%, transparent 50%),
-                  radial-gradient(circle at 50% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: radial-gradient(circle at 30% 40%, rgba(168,85,247,0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 60%, rgba(236,72,153,0.12) 0%, transparent 50%),
+                  radial-gradient(circle at 50% 80%, rgba(59,130,246,0.1) 0%, transparent 50%);
       animation: float 20s ease-in-out infinite;
     }
 
     @keyframes float {
-      0%, 100% { transform: translate(0, 0) rotate(0deg); }
-      33% { transform: translate(2%, -2%) rotate(1deg); }
-      66% { transform: translate(-1%, 1%) rotate(-1deg); }
+      0%, 100% { transform: translate(0,0) rotate(0deg); }
+      33% { transform: translate(2%,-2%) rotate(1deg); }
+      66% { transform: translate(-1%,1%) rotate(-1deg); }
     }
 
-    .card {
+    /* ---- FORM SCREEN ---- */
+    #form-screen {
       position: relative;
+      z-index: 10;
       text-align: center;
-      padding: 4rem 6rem;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    #form-screen .card {
+      padding: 3rem 4rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
       border-radius: 2rem;
       backdrop-filter: blur(20px);
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.3);
     }
 
-    h1 {
+    #form-screen h2 {
+      font-family: "Great Vibes", cursive;
+      font-size: 3rem;
+      background: linear-gradient(135deg, #e0c3fc, #f5d5e0, #ffddb7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+
+    #form-screen p {
+      color: rgba(255,255,255,0.45);
+      font-style: italic;
+      font-size: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    #name-input {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      font-size: 1.2rem;
+      font-family: "Lora", serif;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 1rem;
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    #name-input::placeholder { color: rgba(255,255,255,0.25); }
+    #name-input:focus {
+      border-color: rgba(224,195,252,0.5);
+      box-shadow: 0 0 20px rgba(224,195,252,0.15);
+    }
+
+    #submit-btn {
+      margin-top: 1.5rem;
+      padding: 0.9rem 3rem;
+      font-family: "Great Vibes", cursive;
+      font-size: 1.6rem;
+      border: none;
+      border-radius: 1rem;
+      background: linear-gradient(135deg, #e0c3fc, #f5d5e0, #ffddb7);
+      color: #1a1a2e;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    #submit-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(224,195,252,0.3);
+    }
+
+    /* ---- MAIN SCREEN (hidden by default) ---- */
+    #main-screen {
+      display: none;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    #main-screen .card {
+      padding: 4rem 6rem;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 2rem;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+      z-index: 2;
+      position: relative;
+      animation: cardAppear 1s ease-out forwards;
+      opacity: 0;
+      transform: scale(0.8);
+    }
+
+    @keyframes cardAppear {
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    #main-screen h1 {
       font-family: "Great Vibes", cursive;
       font-size: 5rem;
       background: linear-gradient(135deg, #e0c3fc, #f5d5e0, #ffddb7);
@@ -63,47 +144,26 @@
       letter-spacing: 2px;
     }
 
-    p {
-      font-family: "Lora", serif;
+    #main-screen p {
       font-style: italic;
-      color: rgba(255, 255, 255, 0.55);
+      color: rgba(255,255,255,0.55);
       font-size: 1.15rem;
       margin-top: 1.5rem;
       letter-spacing: 0.5px;
     }
 
-    .dot {
-      position: absolute;
-      border-radius: 50%;
-      pointer-events: none;
-      opacity: 0;
-      animation: dotPulse 4s ease-in-out infinite;
-    }
-
-    @keyframes dotPulse {
-      0%, 100% { opacity: 0; transform: scale(0.5); }
-      50% { opacity: 1; transform: scale(1); }
-    }
-
+    /* ---- HEARTS ---- */
     @keyframes fall {
-      0% {
-        transform: translateY(-10vh) rotate(0deg);
-        opacity: 0;
-      }
+      0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
       10% { opacity: 1; }
       90% { opacity: 1; }
-      100% {
-        transform: translateY(110vh) rotate(360deg);
-        opacity: 0;
-      }
+      100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
     }
-
     @keyframes sway {
       0%, 100% { margin-left: 0; }
       25% { margin-left: 30px; }
       75% { margin-left: -30px; }
     }
-
     .heart {
       position: fixed;
       top: -5vh;
@@ -113,55 +173,153 @@
       user-select: none;
     }
 
-    .card {
-      z-index: 1;
+    /* ---- DOTS ---- */
+    .dot {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+      animation: dotPulse 4s ease-in-out infinite;
+    }
+    @keyframes dotPulse {
+      0%, 100% { opacity: 0; transform: scale(0.5); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+
+    /* ---- SPARKLES ---- */
+    .sparkle {
+      position: fixed;
+      pointer-events: none;
+      z-index: 100;
+      font-size: 1.5rem;
+      animation: sparkleAnim 0.8s ease-out forwards;
+    }
+    @keyframes sparkleAnim {
+      0% { opacity: 1; transform: translate(0,0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--dx), var(--dy)) scale(0); }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Aaron</h1>
-    <p>Majestic.</p>
+
+  <!-- FORMULAIRE -->
+  <div id="form-screen">
+    <div class="card">
+      <h2>Dis-moi ton prenom...</h2>
+      <p>Entre ton vrai prenom, celui qui te ressemble.</p>
+      <input type="text" id="name-input" placeholder="Ton prenom..." autocomplete="off" autofocus>
+      <br>
+      <button id="submit-btn">Decouvrir</button>
+    </div>
   </div>
+
+  <!-- PAGE PRINCIPALE -->
+  <div id="main-screen">
+    <div class="card">
+      <h1 id="love-text"></h1>
+      <p id="sub-text"></p>
+    </div>
+  </div>
+
   <script>
-    // Hearts falling
-    const hearts = ["\u2764\uFE0F", "\uD83E\uDD0D", "\uD83D\uDC95", "\uD83D\uDC96", "\uD83D\uDC97", "\uD83D\uDC9C", "\uD83E\uDE77", "\uD83D\uDC9B"];
-    for (let i = 0; i < 35; i++) {
-      const el = document.createElement("div");
-      el.className = "heart";
-      el.textContent = hearts[Math.floor(Math.random() * hearts.length)];
-      el.style.left = Math.random() * 100 + "vw";
-      el.style.fontSize = (0.8 + Math.random() * 1.5) + "rem";
-      el.style.animationDuration = (6 + Math.random() * 8) + "s, " + (2 + Math.random() * 3) + "s";
-      el.style.animationDelay = (Math.random() * 10) + "s, " + (Math.random() * 3) + "s";
-      el.style.opacity = 0.4 + Math.random() * 0.6;
-      document.body.appendChild(el);
+    const formScreen = document.getElementById("form-screen");
+    const mainScreen = document.getElementById("main-screen");
+    const nameInput = document.getElementById("name-input");
+    const submitBtn = document.getElementById("submit-btn");
+    const loveText = document.getElementById("love-text");
+    const subText = document.getElementById("sub-text");
+
+    // Allow Enter key
+    nameInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") launch();
+    });
+    submitBtn.addEventListener("click", launch);
+
+    function launch() {
+      const name = nameInput.value.trim();
+      if (!name) { nameInput.focus(); return; }
+
+      // Capitalize first letter
+      const pretty = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+
+      // Set text
+      loveText.textContent = "Je t'aime " + pretty;
+      subText.textContent = "Cette page est pour toi, " + pretty + ".";
+      document.title = "Je t'aime " + pretty;
+
+      // Transition
+      formScreen.style.display = "none";
+      mainScreen.style.display = "block";
+
+      // SPARKLES EXPLOSION
+      spawnSparkles(window.innerWidth / 2, window.innerHeight / 2, 60);
+
+      // Start hearts
+      spawnHearts();
+
+      // Start dots
+      spawnDots();
     }
-  </script>
-  <script>
-    const colors = [
-      'rgba(168, 85, 247, 0.6)',
-      'rgba(236, 72, 153, 0.5)',
-      'rgba(59, 130, 246, 0.5)',
-      'rgba(224, 195, 252, 0.4)',
-      'rgba(245, 213, 224, 0.4)',
-      'rgba(255, 221, 183, 0.4)',
-      'rgba(147, 51, 234, 0.5)',
-      'rgba(251, 146, 60, 0.4)',
-    ];
-    for (let i = 0; i < 40; i++) {
-      const dot = document.createElement('div');
-      dot.classList.add('dot');
-      const size = Math.random() * 12 + 4;
-      dot.style.width = size + 'px';
-      dot.style.height = size + 'px';
-      dot.style.left = Math.random() * 100 + 'vw';
-      dot.style.top = Math.random() * 100 + 'vh';
-      dot.style.background = colors[Math.floor(Math.random() * colors.length)];
-      dot.style.animationDelay = (Math.random() * 4) + 's';
-      dot.style.animationDuration = (Math.random() * 3 + 3) + 's';
-      dot.style.boxShadow = '0 0 ' + (size * 2) + 'px ' + dot.style.background;
-      document.body.appendChild(dot);
+
+    // ---- SPARKLES ----
+    function spawnSparkles(cx, cy, count) {
+      const emojis = ["\u2728", "\uD83D\uDCAB", "\u2B50", "\u2764\uFE0F", "\uD83D\uDC96", "\u2763\uFE0F", "\uD83C\uDF1F"];
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement("div");
+        el.className = "sparkle";
+        el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+        const angle = (Math.PI * 2 * i) / count + (Math.random() - 0.5) * 0.5;
+        const dist = 80 + Math.random() * 250;
+        const dx = Math.cos(angle) * dist;
+        const dy = Math.sin(angle) * dist;
+        el.style.left = cx + "px";
+        el.style.top = cy + "px";
+        el.style.setProperty("--dx", dx + "px");
+        el.style.setProperty("--dy", dy + "px");
+        el.style.fontSize = (1 + Math.random() * 1.5) + "rem";
+        el.style.animationDuration = (0.6 + Math.random() * 0.6) + "s";
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 1500);
+      }
+    }
+
+    // ---- HEARTS ----
+    function spawnHearts() {
+      const hearts = ["\u2764\uFE0F", "\uD83E\uDD0D", "\uD83D\uDC95", "\uD83D\uDC96", "\uD83D\uDC97", "\uD83D\uDC9C", "\uD83E\uDE77", "\uD83D\uDC9B"];
+      for (let i = 0; i < 35; i++) {
+        const el = document.createElement("div");
+        el.className = "heart";
+        el.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+        el.style.left = Math.random() * 100 + "vw";
+        el.style.fontSize = (0.8 + Math.random() * 1.5) + "rem";
+        el.style.animationDuration = (6 + Math.random() * 8) + "s, " + (2 + Math.random() * 3) + "s";
+        el.style.animationDelay = (Math.random() * 5) + "s, " + (Math.random() * 3) + "s";
+        el.style.opacity = 0.4 + Math.random() * 0.6;
+        document.body.appendChild(el);
+      }
+    }
+
+    // ---- DOTS ----
+    function spawnDots() {
+      const colors = [
+        "rgba(168,85,247,0.6)", "rgba(236,72,153,0.5)", "rgba(59,130,246,0.5)",
+        "rgba(224,195,252,0.4)", "rgba(245,213,224,0.4)", "rgba(255,221,183,0.4)",
+        "rgba(147,51,234,0.5)", "rgba(251,146,60,0.4)"
+      ];
+      for (let i = 0; i < 40; i++) {
+        const dot = document.createElement("div");
+        dot.classList.add("dot");
+        const size = Math.random() * 12 + 4;
+        dot.style.width = size + "px";
+        dot.style.height = size + "px";
+        dot.style.left = Math.random() * 100 + "vw";
+        dot.style.top = Math.random() * 100 + "vh";
+        dot.style.background = colors[Math.floor(Math.random() * colors.length)];
+        dot.style.animationDelay = (Math.random() * 4) + "s";
+        dot.style.animationDuration = (Math.random() * 3 + 3) + "s";
+        dot.style.boxShadow = "0 0 " + (size * 2) + "px " + dot.style.background;
+        document.body.appendChild(dot);
+      }
     }
   </script>
 </body>
