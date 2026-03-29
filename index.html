@@ -235,12 +235,43 @@
     });
     submitBtn.addEventListener("click", launch);
 
+    // Check localStorage on load
+    const savedName = localStorage.getItem("love_prenom");
+    if (savedName) {
+      // Auto-launch with saved name
+      formScreen.style.display = "none";
+      mainScreen.style.display = "block";
+      loveText.textContent = "Je t'aime " + savedName;
+      subText.textContent = "Cette page est pour toi, " + savedName + ".";
+      document.title = "Je t'aime " + savedName;
+      spawnHearts();
+      spawnDots();
+    }
+
     function launch() {
       const name = nameInput.value.trim();
       if (!name) { nameInput.focus(); return; }
 
       // Capitalize first letter
       const pretty = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+
+      // Check if a name is already saved
+      const existing = localStorage.getItem("love_prenom");
+      if (existing && existing !== pretty) {
+        nameInput.value = "";
+        nameInput.placeholder = "Tu as deja tente ta chance, " + existing + "...";
+        nameInput.style.borderColor = "rgba(239,68,68,0.6)";
+        nameInput.style.boxShadow = "0 0 20px rgba(239,68,68,0.2)";
+        setTimeout(() => {
+          nameInput.style.borderColor = "";
+          nameInput.style.boxShadow = "";
+          nameInput.placeholder = "Ton prenom...";
+        }, 3000);
+        return;
+      }
+
+      // Save to localStorage
+      localStorage.setItem("love_prenom", pretty);
 
       // Set text
       loveText.textContent = "Je t'aime " + pretty;
