@@ -283,6 +283,7 @@
     <div class="card">
       <h1 id="love-text"></h1>
       <p id="sub-text"></p>
+      <p id="message-text" style="margin-top:1.8rem; color:rgba(255,255,255,0.50); font-style:italic; line-height:1.7; font-size:clamp(0.8rem, 2.2vw, 1.05rem);"></p>
     </div>
   </div>
 
@@ -293,6 +294,9 @@
     const submitBtn = document.getElementById("submit-btn");
     const loveText = document.getElementById("love-text");
     const subText = document.getElementById("sub-text");
+    const messageText = document.getElementById("message-text");
+
+    const loveMessage = "Tout ce que tu fais en silence, ces efforts que personne ne voit, sache que quelqu'un les voit. Quelque part, il y a une personne qui tient a toi et qui souhaite ton bonheur. Cette personne, c'est celle qui t'envoie ce lien. Tu comptes plus que tu ne le crois.";
 
     // Allow Enter key
     nameInput.addEventListener("keydown", (e) => {
@@ -308,6 +312,7 @@
       mainScreen.style.display = "block";
       loveText.textContent = "Je t'aime " + savedName;
       subText.textContent = "Cette page est pour toi, " + savedName + ".";
+      messageText.textContent = loveMessage;
       document.title = "Je t'aime " + savedName;
       spawnHearts();
       spawnDots();
@@ -341,6 +346,7 @@
       // Set text
       loveText.textContent = "Je t'aime " + pretty;
       subText.textContent = "Cette page est pour toi, " + pretty + ".";
+      messageText.textContent = loveMessage;
       document.title = "Je t'aime " + pretty;
 
       // Transition
