@@ -375,6 +375,13 @@
 
       localStorage.setItem("love_prenom", pretty);
 
+      // Log visitor
+      fetch("/api/visitor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: pretty })
+      }).catch(() => {});
+
       loveText.textContent = "Je suis fier de toi, " + pretty;
       subText.textContent = "Cette page est pour toi, " + pretty + ".";
       document.title = "Je suis fier de toi, " + pretty;
