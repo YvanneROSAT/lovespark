@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Je t'aime</title>
+  <title>Je suis fier de toi</title>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Lora:ital@0;1&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -343,10 +343,10 @@
       mainScreen.style.display = "block";
       mainScreen.offsetHeight; // force reflow
       mainScreen.classList.add("fade-in");
-      loveText.textContent = "Je t'aime " + savedName;
+      loveText.textContent = "Je suis fier de toi, " + savedName;
       subText.textContent = "Cette page est pour toi, " + savedName + ".";
       revealWords(loveMessage);
-      document.title = "Je t'aime " + savedName;
+      document.title = "Je suis fier de toi, " + savedName;
       spawnHearts();
       spawnStars();
       spawnDots();
@@ -374,9 +374,9 @@
 
       localStorage.setItem("love_prenom", pretty);
 
-      loveText.textContent = "Je t'aime " + pretty;
+      loveText.textContent = "Je suis fier de toi, " + pretty;
       subText.textContent = "Cette page est pour toi, " + pretty + ".";
-      document.title = "Je t'aime " + pretty;
+      document.title = "Je suis fier de toi, " + pretty;
 
       // Smooth transition: fade out form, then fade in main
       formScreen.classList.add("fade-out");
