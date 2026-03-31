@@ -7,6 +7,19 @@ from http.server import HTTPServer, SimpleHTTPRequestHandler
 VISITORS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "visitors.json")
 
 class Handler(SimpleHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == "/api/visitors":
+            visitors = []
+            if os.path.exists(VISITORS_FILE):
+                with open(VISITORS_FILE, "r") as f:
+                    visitors = json.load(f)
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps(visitors, ensure_ascii=False).encode())
+        else:
+            super().do_GET()
+
     def do_POST(self):
         if self.path == "/api/visitor":
             length = int(self.headers.get("Content-Length", 0))
