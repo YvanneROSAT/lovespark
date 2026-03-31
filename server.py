@@ -55,5 +55,6 @@ class Handler(SimpleHTTPRequestHandler):
             self.end_headers()
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-print("Serveur LoveSpark sur http://0.0.0.0:9090")
-HTTPServer(("0.0.0.0", 9090), Handler).serve_forever()
+port = int(os.environ.get("PORT", 3000))
+print(f"Serveur LoveSpark sur http://0.0.0.0:{port}")
+HTTPServer(("0.0.0.0", port), Handler).serve_forever()
