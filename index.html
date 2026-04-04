@@ -330,63 +330,55 @@
     const subText = document.getElementById("sub-text");
     const messageText = document.getElementById("message-text");
 
-    const loveMessage = "Tout ce que tu fais en silence, ces efforts que personne ne voit, sache que quelqu'un les voit. Quelque part, il y a une personne qui tient a toi et qui souhaite ton bonheur. Cette personne, c'est celle qui t'envoie ce lien. Tu comptes plus que tu ne le crois.";
+    const fallbackMessage = "Tout ce que tu fais en silence, ces efforts que personne ne voit, sache que quelqu'un les voit. Quelque part, il y a une personne qui tient a toi et qui souhaite ton bonheur. Cette personne, c'est celle qui t'envoie ce lien. Tu comptes plus que tu ne le crois.";
 
     nameInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") launch();
     });
     submitBtn.addEventListener("click", launch);
 
-    // Check localStorage on load
+    function hasVisited() {
+      return localStorage.getItem("love_prenom") || document.cookie.includes("love_visited=1");
+    }
+
+    // Check localStorage on load — restore cached message
     const savedName = localStorage.getItem("love_prenom");
     if (savedName) {
       formScreen.style.display = "none";
       mainScreen.style.display = "block";
-      mainScreen.offsetHeight; // force reflow
+      mainScreen.offsetHeight;
       mainScreen.classList.add("fade-in");
       loveText.textContent = "Je suis fier de toi, " + savedName;
       subText.textContent = "Cette page est pour toi, " + savedName + ".";
-      revealWords(loveMessage);
       document.title = "Je suis fier de toi, " + savedName;
       spawnHearts();
       spawnStars();
       spawnDots();
+
+      // Fetch cached AI message from server
+      fetch("/api/my-message?name=" + encodeURIComponent(savedName))
+        .then(r => r.json())
+        .then(data => revealWords(data.message || fallbackMessage))
+        .catch(() => revealWords(fallbackMessage));
     }
 
-    function launch() {
-      const name = nameInput.value.trim();
-      if (!name) { nameInput.focus(); return; }
+    function showAlreadyVisited(name) {
+      nameInput.value = "";
+      nameInput.placeholder = "Tu as deja tente ta chance, " + name + "...";
+      nameInput.style.borderColor = "rgba(239,68,68,0.6)";
+      nameInput.style.boxShadow = "0 0 20px rgba(239,68,68,0.2)";
+      setTimeout(() => {
+        nameInput.style.borderColor = "";
+        nameInput.style.boxShadow = "";
+        nameInput.placeholder = "Ton prenom...";
+      }, 3000);
+    }
 
-      const pretty = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+    function showMessageScreen(name, message) {
+      loveText.textContent = "Je suis fier de toi, " + name;
+      subText.textContent = "Cette page est pour toi, " + name + ".";
+      document.title = "Je suis fier de toi, " + name;
 
-      const existing = localStorage.getItem("love_prenom");
-      if (existing && existing !== pretty) {
-        nameInput.value = "";
-        nameInput.placeholder = "Tu as deja tente ta chance, " + existing + "...";
-        nameInput.style.borderColor = "rgba(239,68,68,0.6)";
-        nameInput.style.boxShadow = "0 0 20px rgba(239,68,68,0.2)";
-        setTimeout(() => {
-          nameInput.style.borderColor = "";
-          nameInput.style.boxShadow = "";
-          nameInput.placeholder = "Ton prenom...";
-        }, 3000);
-        return;
-      }
-
-      localStorage.setItem("love_prenom", pretty);
-
-      // Log visitor
-      fetch("/api/visitor", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: pretty })
-      }).catch(() => {});
-
-      loveText.textContent = "Je suis fier de toi, " + pretty;
-      subText.textContent = "Cette page est pour toi, " + pretty + ".";
-      document.title = "Je suis fier de toi, " + pretty;
-
-      // Smooth transition: fade out form, then fade in main
       formScreen.classList.add("fade-out");
       setTimeout(() => {
         formScreen.style.display = "none";
@@ -396,13 +388,69 @@
 
         spawnSparkles(window.innerWidth / 2, window.innerHeight / 2, 60);
 
-        // Reveal message word by word after card appears
-        setTimeout(() => revealWords(loveMessage), 600);
+        // Show loading dots, then replace with real message
+        messageText.innerHTML = '<span class="word" style="animation-delay:0s;opacity:0.4">...</span>';
+        messageText.querySelector(".word").style.animation = "wordFadeIn 0.4s forwards, haloPulse 2s infinite";
+
+        if (message) {
+          setTimeout(() => revealWords(message), 600);
+        }
 
         spawnHearts();
         spawnStars();
         spawnDots();
       }, 600);
+    }
+
+    async function launch() {
+      const name = nameInput.value.trim();
+      if (!name) { nameInput.focus(); return; }
+
+      const pretty = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
+
+      // Client-side check
+      const existing = localStorage.getItem("love_prenom");
+      if (existing && existing !== pretty) {
+        showAlreadyVisited(existing);
+        return;
+      }
+
+      // Disable button during request
+      submitBtn.disabled = true;
+      submitBtn.textContent = "...";
+
+      try {
+        const resp = await fetch("/api/visitor", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: pretty })
+        });
+
+        const data = await resp.json();
+
+        if (resp.status === 403 && data.already_visited) {
+          // Server says already visited — show the cached message if available
+          if (data.message && data.message !== "Tu as deja decouvert ton message.") {
+            localStorage.setItem("love_prenom", data.name || pretty);
+            showMessageScreen(data.name || pretty, data.message);
+          } else {
+            showAlreadyVisited(data.name || pretty);
+          }
+          return;
+        }
+
+        // Success — save and show AI message
+        localStorage.setItem("love_prenom", pretty);
+        showMessageScreen(pretty, data.message || fallbackMessage);
+
+      } catch {
+        // Network error — fallback to hardcoded message
+        localStorage.setItem("love_prenom", pretty);
+        showMessageScreen(pretty, fallbackMessage);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Decouvrir";
+      }
     }
 
     // ---- WORD BY WORD REVEAL ----
