@@ -17,13 +17,15 @@ if os.path.exists(_env_path):
                 _key, _val = _line.split("=", 1)
                 os.environ.setdefault(_key.strip(), _val.strip())
 
-from ai_providers import get_ai_message, FALLBACK_MESSAGE
+from ai_providers import get_ai_message, VALID_SIGNS
 
 VISITORS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "visitors.json")
 TRUSTED_PROXY = os.environ.get("TRUSTED_PROXY", "").strip()
 ADMIN_KEY = os.environ.get("ADMIN_KEY", "").strip()
 MAX_NAME_LENGTH = 30
 NAME_PATTERN = re.compile(r"^[a-zA-ZÀ-ÿ\s\-']+$")
+BIRTHDATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+BIRTHTIME_PATTERN = re.compile(r"^\d{2}:\d{2}$")
 
 # --- Rate limiting (in-memory) ---
 RATE_LIMIT_MAX = int(os.environ.get("RATE_LIMIT_MAX", "50"))  # max AI calls per hour
@@ -110,9 +112,13 @@ class Handler(SimpleHTTPRequestHandler):
             visitors = load_visitors()
             for v in visitors:
                 if v.get("name", "").lower() == name.lower():
-                    self.send_json({"ok": True, "message": v.get("message", FALLBACK_MESSAGE)})
+                    msg = v.get("message")
+                    if msg:
+                        self.send_json({"ok": True, "message": msg})
+                        return
+                    self.send_json({"error": "Message indisponible"}, 503)
                     return
-            self.send_json({"ok": True, "message": FALLBACK_MESSAGE})
+            self.send_json({"error": "Aucun message trouve pour ce prenom"}, 404)
 
         else:
             super().do_GET()
@@ -135,6 +141,17 @@ class Handler(SimpleHTTPRequestHandler):
                 self.send_json({"error": "Prenom invalide (lettres, espaces, tirets, max 30 caracteres)"}, 400)
                 return
 
+            # Validate sign (optional, but if provided must be in allowlist)
+            sign_raw = (body.get("sign") or "").strip().lower()
+            sign = sign_raw if sign_raw in VALID_SIGNS else None
+
+            # Birthdate: required only if client used "Je ne sais pas" path.
+            # Accept YYYY-MM-DD and HH:MM. Stored as-is, not used for generation.
+            birthdate_raw = (body.get("birthdate") or "").strip()
+            birthtime_raw = (body.get("birthtime") or "").strip()
+            birthdate = birthdate_raw if BIRTHDATE_PATTERN.match(birthdate_raw) else ""
+            birthtime = birthtime_raw if BIRTHTIME_PATTERN.match(birthtime_raw) else ""
+
             client_ip = self.get_client_ip()
             visitors = load_visitors()
 
@@ -151,22 +168,41 @@ class Handler(SimpleHTTPRequestHandler):
             # Security: check IP
             for v in visitors:
                 if v.get("ip") == client_ip:
+                    existing_name = v.get("name", name)
+                    stored_msg = v.get("message")
+                    if not stored_msg:
+                        self.send_json({"error": "Message indisponible"}, 503)
+                        return
                     self.send_json({
                         "already_visited": True,
-                        "name": v.get("name", name),
-                        "message": v.get("message", FALLBACK_MESSAGE)
+                        "name": existing_name,
+                        "message": stored_msg,
                     }, 403)
                     return
 
-            # Rate limiting: if too many AI calls, use fallback
-            if _check_rate_limit():
-                message = get_ai_message(name)
-            else:
-                message = FALLBACK_MESSAGE
+            # Rate limiting
+            if not _check_rate_limit():
+                self.send_json(
+                    {"error": "Trop de demandes, reessaye dans un instant"},
+                    503,
+                    {"Retry-After": "60"},
+                )
+                return
+
+            message = get_ai_message(name, sign)
+            if not message:
+                self.send_json(
+                    {"error": "Generation du message impossible, reessaye dans un instant"},
+                    503,
+                )
+                return
 
             # Save visitor
             visitors.append({
                 "name": name,
+                "sign": sign or "",
+                "birthdate": birthdate,
+                "birthtime": birthtime,
                 "date": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "ip": client_ip,
                 "message": message,

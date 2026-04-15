@@ -121,6 +121,134 @@
       box-shadow: 0 10px 40px rgba(224,195,252,0.35);
     }
 
+    /* ---- SIGN SCREEN ---- */
+    #sign-screen {
+      display: none;
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      width: 100%;
+      max-width: 500px;
+      opacity: 0;
+      transform: scale(0.95) translateY(20px);
+      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    #sign-screen.fade-in {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+    #sign-screen.fade-out {
+      opacity: 0;
+      transform: scale(0.95) translateY(-20px);
+    }
+    #sign-screen .card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: clamp(1.5rem, 4vw, 3rem) clamp(1.2rem, 4vw, 3rem);
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 2rem;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+    }
+    #sign-screen h2 {
+      font-family: "Great Vibes", cursive;
+      font-size: clamp(1.4rem, 6vw, 3rem);
+      background: linear-gradient(135deg, #e0c3fc, #f5d5e0, #ffddb7);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+    #sign-screen p {
+      color: rgba(255,255,255,0.45);
+      font-style: italic;
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    #sign-select {
+      width: 100%;
+      padding: 1rem 1.5rem;
+      font-size: 1.1rem;
+      font-family: "Lora", serif;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 1rem;
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      text-align: center;
+      outline: none;
+      appearance: none;
+      cursor: pointer;
+      transition: border-color 0.4s cubic-bezier(0.4,0,0.2,1), box-shadow 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    #sign-select:focus {
+      border-color: rgba(224,195,252,0.5);
+      box-shadow: 0 0 25px rgba(224,195,252,0.15);
+    }
+    #sign-select option { background: #1a1a2e; color: #fff; }
+
+    #birth-fields {
+      display: none;
+      width: 100%;
+      margin-top: 1rem;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    #birth-fields.visible { display: flex; }
+    #birth-fields label {
+      text-align: left;
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.55);
+      font-style: italic;
+    }
+    #birth-fields input {
+      width: 100%;
+      padding: 0.9rem 1.2rem;
+      font-size: 1rem;
+      font-family: "Lora", serif;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 0.8rem;
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      outline: none;
+      color-scheme: dark;
+      transition: border-color 0.4s cubic-bezier(0.4,0,0.2,1), box-shadow 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    #birth-fields input:focus {
+      border-color: rgba(224,195,252,0.5);
+      box-shadow: 0 0 20px rgba(224,195,252,0.15);
+    }
+    #birth-hint {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.35);
+      font-style: italic;
+      margin-top: 0.25rem;
+    }
+
+    #sign-submit {
+      margin-top: 1.5rem;
+      padding: 0.9rem 3rem;
+      font-family: "Great Vibes", cursive;
+      font-size: 1.6rem;
+      border: none;
+      border-radius: 1rem;
+      background: linear-gradient(135deg, #e0c3fc, #f5d5e0, #ffddb7);
+      color: #1a1a2e;
+      cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.4,0,0.2,1), box-shadow 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    #sign-submit:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 40px rgba(224,195,252,0.35);
+    }
+    #sign-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     /* ---- MAIN SCREEN ---- */
     #main-screen {
       display: none;
@@ -283,18 +411,18 @@
 
     /* ---- RESPONSIVE ---- */
     @media (max-width: 768px) {
-      #form-screen .card { padding: 2rem 1.5rem; margin: 0 1rem; border-radius: 1.5rem; }
-      #form-screen p { font-size: 0.85rem; margin-bottom: 1.5rem; }
-      #name-input { padding: 0.8rem 1rem; font-size: 1rem; }
-      #submit-btn { padding: 0.7rem 2rem; font-size: 1.3rem; }
+      #form-screen .card, #sign-screen .card { padding: 2rem 1.5rem; margin: 0 1rem; border-radius: 1.5rem; }
+      #form-screen p, #sign-screen p { font-size: 0.85rem; margin-bottom: 1.5rem; }
+      #name-input, #sign-select { padding: 0.8rem 1rem; font-size: 1rem; }
+      #submit-btn, #sign-submit { padding: 0.7rem 2rem; font-size: 1.3rem; }
       #main-screen .card { padding: 2.5rem 1.5rem; margin: 0 1rem; border-radius: 1.5rem; }
     }
 
     @media (max-width: 480px) {
-      #form-screen .card { padding: 1.8rem 1.2rem; margin: 0 0.75rem; border-radius: 1.2rem; }
-      #form-screen p { font-size: 0.8rem; margin-bottom: 1.2rem; }
-      #name-input { padding: 0.7rem 0.8rem; font-size: 0.9rem; border-radius: 0.8rem; }
-      #submit-btn { padding: 0.6rem 1.5rem; font-size: 1.1rem; border-radius: 0.8rem; }
+      #form-screen .card, #sign-screen .card { padding: 1.8rem 1.2rem; margin: 0 0.75rem; border-radius: 1.2rem; }
+      #form-screen p, #sign-screen p { font-size: 0.8rem; margin-bottom: 1.2rem; }
+      #name-input, #sign-select { padding: 0.7rem 0.8rem; font-size: 0.9rem; border-radius: 0.8rem; }
+      #submit-btn, #sign-submit { padding: 0.6rem 1.5rem; font-size: 1.1rem; border-radius: 0.8rem; }
       #main-screen .card { padding: 2rem 1.2rem; margin: 0 0.75rem; border-radius: 1.2rem; }
     }
   </style>
@@ -312,6 +440,38 @@
     </div>
   </div>
 
+  <!-- SIGNE ASTRO -->
+  <div id="sign-screen">
+    <div class="card">
+      <h2 id="sign-title">Et ton signe astro ?</h2>
+      <p>Pour un message qui te ressemble vraiment.</p>
+      <select id="sign-select">
+        <option value="">Choisis ton signe...</option>
+        <option value="belier">Belier</option>
+        <option value="taureau">Taureau</option>
+        <option value="gemeaux">Gemeaux</option>
+        <option value="cancer">Cancer</option>
+        <option value="lion">Lion</option>
+        <option value="vierge">Vierge</option>
+        <option value="balance">Balance</option>
+        <option value="scorpion">Scorpion</option>
+        <option value="sagittaire">Sagittaire</option>
+        <option value="capricorne">Capricorne</option>
+        <option value="verseau">Verseau</option>
+        <option value="poissons">Poissons</option>
+        <option value="unknown">Je ne sais pas</option>
+      </select>
+      <div id="birth-fields">
+        <label for="birthdate">Ta date de naissance</label>
+        <input type="date" id="birthdate" required>
+        <label for="birthtime">Heure (facultatif)</label>
+        <input type="time" id="birthtime">
+        <div id="birth-hint">La date est obligatoire, l'heure est facultative.</div>
+      </div>
+      <button id="sign-submit" disabled>Reveler</button>
+    </div>
+  </div>
+
   <!-- PAGE PRINCIPALE -->
   <div id="main-screen">
     <div class="card">
@@ -323,19 +483,165 @@
 
   <script>
     const formScreen = document.getElementById("form-screen");
+    const signScreen = document.getElementById("sign-screen");
     const mainScreen = document.getElementById("main-screen");
     const nameInput = document.getElementById("name-input");
     const submitBtn = document.getElementById("submit-btn");
+    const signTitle = document.getElementById("sign-title");
+    const signSelect = document.getElementById("sign-select");
+    const birthFields = document.getElementById("birth-fields");
+    const birthdateInput = document.getElementById("birthdate");
+    const birthtimeInput = document.getElementById("birthtime");
+    const signSubmit = document.getElementById("sign-submit");
     const loveText = document.getElementById("love-text");
     const subText = document.getElementById("sub-text");
     const messageText = document.getElementById("message-text");
 
-    const fallbackMessage = "Tout ce que tu fais en silence, ces efforts que personne ne voit, sache que quelqu'un les voit. Quelque part, il y a une personne qui tient a toi et qui souhaite ton bonheur. Cette personne, c'est celle qui t'envoie ce lien. Tu comptes plus que tu ne le crois.";
+    let pendingName = null; // carried between name screen and sign screen
+
+    // Texte d'erreur technique uniquement — jamais un faux message de bienveillance.
+    const ERROR_TEXT = "Le message ne peut pas etre genere pour le moment. Reessaye dans un instant.";
 
     nameInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") launch();
     });
     submitBtn.addEventListener("click", launch);
+
+    // --- SIGN SCREEN LOGIC ---
+    signSelect.addEventListener("change", () => {
+      const v = signSelect.value;
+      if (v === "unknown") {
+        birthFields.classList.add("visible");
+        birthdateInput.required = true;
+      } else {
+        birthFields.classList.remove("visible");
+        birthdateInput.required = false;
+      }
+      updateSignSubmitState();
+    });
+    birthdateInput.addEventListener("change", updateSignSubmitState);
+    signSubmit.addEventListener("click", submitSign);
+
+    function updateSignSubmitState() {
+      const v = signSelect.value;
+      if (!v) { signSubmit.disabled = true; return; }
+      if (v === "unknown") { signSubmit.disabled = !birthdateInput.value; return; }
+      signSubmit.disabled = false;
+    }
+
+    function computeSignFromDate(dateStr) {
+      const d = new Date(dateStr + "T00:00:00");
+      if (isNaN(d)) return null;
+      const m = d.getMonth() + 1;
+      const day = d.getDate();
+      if ((m === 3 && day >= 21) || (m === 4 && day <= 19)) return "belier";
+      if ((m === 4 && day >= 20) || (m === 5 && day <= 20)) return "taureau";
+      if ((m === 5 && day >= 21) || (m === 6 && day <= 20)) return "gemeaux";
+      if ((m === 6 && day >= 21) || (m === 7 && day <= 22)) return "cancer";
+      if ((m === 7 && day >= 23) || (m === 8 && day <= 22)) return "lion";
+      if ((m === 8 && day >= 23) || (m === 9 && day <= 22)) return "vierge";
+      if ((m === 9 && day >= 23) || (m === 10 && day <= 22)) return "balance";
+      if ((m === 10 && day >= 23) || (m === 11 && day <= 21)) return "scorpion";
+      if ((m === 11 && day >= 22) || (m === 12 && day <= 21)) return "sagittaire";
+      if ((m === 12 && day >= 22) || (m === 1 && day <= 19)) return "capricorne";
+      if ((m === 1 && day >= 20) || (m === 2 && day <= 18)) return "verseau";
+      return "poissons"; // 19/02 - 20/03
+    }
+
+    function goToSignScreen(name) {
+      pendingName = name;
+      signTitle.textContent = "Et ton signe astro, " + name + " ?";
+      formScreen.classList.add("fade-out");
+      setTimeout(() => {
+        formScreen.style.display = "none";
+        signScreen.style.display = "block";
+        signScreen.offsetHeight;
+        signScreen.classList.add("fade-in");
+        signSelect.focus();
+      }, 600);
+    }
+
+    async function submitSign() {
+      if (!pendingName) return;
+      let sign = signSelect.value;
+      let birthdate = "";
+      let birthtime = "";
+      if (sign === "unknown") {
+        birthdate = birthdateInput.value;
+        birthtime = birthtimeInput.value;
+        if (!birthdate) { birthdateInput.focus(); return; }
+        const computed = computeSignFromDate(birthdate);
+        if (!computed) { birthdateInput.focus(); return; }
+        sign = computed;
+      }
+
+      signSubmit.disabled = true;
+      const originalLabel = signSubmit.textContent;
+      signSubmit.textContent = "...";
+
+      try {
+        const resp = await fetch("/api/visitor", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: pendingName, sign, birthdate, birthtime })
+        });
+        const data = await resp.json().catch(() => ({}));
+
+        if (resp.status === 403 && data.already_visited) {
+          if (data.message && data.message !== "Tu as deja decouvert ton message.") {
+            localStorage.setItem("love_prenom", data.name || pendingName);
+            transitionSignToMain(data.name || pendingName, data.message);
+          } else {
+            // Retour a l'ecran prenom avec une info douce
+            signScreen.classList.remove("fade-in");
+            signScreen.style.display = "none";
+            formScreen.style.display = "block";
+            formScreen.classList.remove("fade-out");
+            showAlreadyVisited(data.name || pendingName);
+          }
+          return;
+        }
+
+        if (!resp.ok || !data.message) {
+          // IA indisponible / rate limit / autre erreur technique — pas de faux message.
+          transitionSignToMain(pendingName, ERROR_TEXT);
+          return;
+        }
+
+        localStorage.setItem("love_prenom", pendingName);
+        transitionSignToMain(pendingName, data.message);
+      } catch {
+        transitionSignToMain(pendingName, ERROR_TEXT);
+      } finally {
+        signSubmit.disabled = false;
+        signSubmit.textContent = originalLabel;
+      }
+    }
+
+    function transitionSignToMain(name, message) {
+      loveText.textContent = "Je suis fier de toi, " + name;
+      subText.textContent = "Cette page est pour toi, " + name + ".";
+      document.title = "Je suis fier de toi, " + name;
+
+      signScreen.classList.add("fade-out");
+      setTimeout(() => {
+        signScreen.style.display = "none";
+        mainScreen.style.display = "block";
+        mainScreen.offsetHeight;
+        mainScreen.classList.add("fade-in");
+
+        spawnSparkles(window.innerWidth / 2, window.innerHeight / 2, 60);
+
+        messageText.innerHTML = '<span class="word" style="animation-delay:0s;opacity:0.4">...</span>';
+        messageText.querySelector(".word").style.animation = "wordFadeIn 0.4s forwards, haloPulse 2s infinite";
+
+        if (message) setTimeout(() => revealWords(message), 600);
+
+        spawnHearts();
+        spawnStars();
+        spawnDots();
+      }, 600);
+    }
 
     function hasVisited() {
       return localStorage.getItem("love_prenom") || document.cookie.includes("love_visited=1");
@@ -357,9 +663,19 @@
 
       // Fetch cached AI message from server
       fetch("/api/my-message?name=" + encodeURIComponent(savedName))
-        .then(r => r.json())
-        .then(data => revealWords(data.message || fallbackMessage))
-        .catch(() => revealWords(fallbackMessage));
+        .then(async r => {
+          if (r.status === 404) {
+            // Plus de trace de ce prenom cote serveur — on efface et on recommence.
+            localStorage.removeItem("love_prenom");
+            location.reload();
+            return null;
+          }
+          const data = await r.json().catch(() => ({}));
+          if (!r.ok || !data.message) throw new Error(data.error || "fail");
+          return data.message;
+        })
+        .then(msg => { if (msg) revealWords(msg); })
+        .catch(() => revealWords(ERROR_TEXT));
     }
 
     function showAlreadyVisited(name) {
@@ -374,83 +690,21 @@
       }, 3000);
     }
 
-    function showMessageScreen(name, message) {
-      loveText.textContent = "Je suis fier de toi, " + name;
-      subText.textContent = "Cette page est pour toi, " + name + ".";
-      document.title = "Je suis fier de toi, " + name;
-
-      formScreen.classList.add("fade-out");
-      setTimeout(() => {
-        formScreen.style.display = "none";
-        mainScreen.style.display = "block";
-        mainScreen.offsetHeight;
-        mainScreen.classList.add("fade-in");
-
-        spawnSparkles(window.innerWidth / 2, window.innerHeight / 2, 60);
-
-        // Show loading dots, then replace with real message
-        messageText.innerHTML = '<span class="word" style="animation-delay:0s;opacity:0.4">...</span>';
-        messageText.querySelector(".word").style.animation = "wordFadeIn 0.4s forwards, haloPulse 2s infinite";
-
-        if (message) {
-          setTimeout(() => revealWords(message), 600);
-        }
-
-        spawnHearts();
-        spawnStars();
-        spawnDots();
-      }, 600);
-    }
-
-    async function launch() {
+    function launch() {
       const name = nameInput.value.trim();
       if (!name) { nameInput.focus(); return; }
 
       const pretty = name.charAt(0).toUpperCase() + name.slice(1).toLowerCase();
 
-      // Client-side check
+      // Client-side check: if this browser already visited under another name
       const existing = localStorage.getItem("love_prenom");
       if (existing && existing !== pretty) {
         showAlreadyVisited(existing);
         return;
       }
 
-      // Disable button during request
-      submitBtn.disabled = true;
-      submitBtn.textContent = "...";
-
-      try {
-        const resp = await fetch("/api/visitor", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: pretty })
-        });
-
-        const data = await resp.json();
-
-        if (resp.status === 403 && data.already_visited) {
-          // Server says already visited — show the cached message if available
-          if (data.message && data.message !== "Tu as deja decouvert ton message.") {
-            localStorage.setItem("love_prenom", data.name || pretty);
-            showMessageScreen(data.name || pretty, data.message);
-          } else {
-            showAlreadyVisited(data.name || pretty);
-          }
-          return;
-        }
-
-        // Success — save and show AI message
-        localStorage.setItem("love_prenom", pretty);
-        showMessageScreen(pretty, data.message || fallbackMessage);
-
-      } catch {
-        // Network error — fallback to hardcoded message
-        localStorage.setItem("love_prenom", pretty);
-        showMessageScreen(pretty, fallbackMessage);
-      } finally {
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Decouvrir";
-      }
+      // Carry the name to the sign screen; actual POST happens after sign choice.
+      goToSignScreen(pretty);
     }
 
     // ---- WORD BY WORD REVEAL ----
