@@ -155,27 +155,19 @@ class Handler(SimpleHTTPRequestHandler):
             client_ip = self.get_client_ip()
             visitors = load_visitors()
 
-            # Security: check cookie
-            cookie_header = self.headers.get("Cookie", "")
-            if "love_visited=1" in cookie_header:
-                self.send_json({
-                    "already_visited": True,
-                    "name": name,
-                    "message": "Tu as deja decouvert ton message."
-                }, 403)
-                return
-
-            # Security: check IP
+            # Idempotence par prenom: chaque prenom a UN message stable.
+            # On ne deduplique plus par IP (faux positifs derriere NAT/proxy)
+            # ni par cookie aveugle (pose probleme quand 2 personnes partagent
+            # un appareil ou une connexion).
             for v in visitors:
-                if v.get("ip") == client_ip:
-                    existing_name = v.get("name", name)
+                if v.get("name", "").lower() == name.lower():
                     stored_msg = v.get("message")
                     if not stored_msg:
                         self.send_json({"error": "Message indisponible"}, 503)
                         return
                     self.send_json({
                         "already_visited": True,
-                        "name": existing_name,
+                        "name": v.get("name", name),
                         "message": stored_msg,
                     }, 403)
                     return
@@ -209,12 +201,7 @@ class Handler(SimpleHTTPRequestHandler):
             })
             save_visitors(visitors)
 
-            # Respond with cookie
-            self.send_json(
-                {"ok": True, "message": message},
-                200,
-                {"Set-Cookie": "love_visited=1; HttpOnly; Path=/; Max-Age=31536000; SameSite=Strict"}
-            )
+            self.send_json({"ok": True, "message": message})
         else:
             self.send_response(404)
             self.end_headers()
