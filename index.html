@@ -502,6 +502,15 @@
     // Texte d'erreur technique uniquement — jamais un faux message de bienveillance.
     const ERROR_TEXT = "Le message ne peut pas etre genere pour le moment. Reessaye dans un instant.";
 
+    // Migration du localStorage. Bumper cette version invalide TOUS les caches
+    // existants et force les visiteurs a recommencer (utile quand un bug a
+    // pollue la cle love_prenom avec un mauvais prenom).
+    const LOVE_STORAGE_VERSION = "2";
+    if (localStorage.getItem("love_version") !== LOVE_STORAGE_VERSION) {
+      localStorage.removeItem("love_prenom");
+      localStorage.setItem("love_version", LOVE_STORAGE_VERSION);
+    }
+
     nameInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter") launch();
     });
