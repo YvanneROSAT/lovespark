@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
+import hmac
+import ipaddress
 import json
 import os
 import re
 import time
 from datetime import datetime
-from http.server import HTTPServer, SimpleHTTPRequestHandler
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse, parse_qs
 
 # Load .env file (stdlib, no dependency)
@@ -19,8 +21,28 @@ if os.path.exists(_env_path):
 
 from ai_providers import get_ai_message, VALID_SIGNS
 
-VISITORS_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "visitors.json")
-TRUSTED_PROXY = os.environ.get("TRUSTED_PROXY", "").strip()
+APP_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Les donnees visiteurs vivent HORS du dossier de l'application, dans un volume
+# persistant. Avant le 25/09/2026, visitors.json etait dans /app et donc
+# telechargeable par n'importe qui.
+DATA_DIR = os.environ.get("DATA_DIR", os.path.join(APP_DIR, "data"))
+os.makedirs(DATA_DIR, exist_ok=True)
+VISITORS_FILE = os.path.join(DATA_DIR, "visitors.json")
+
+# Liste blanche des fichiers publics. Tout le reste repond 404.
+# Avant le 25/09/2026, le serveur publiait tout /app, y compris le Dockerfile
+# dans lequel Coolify ecrit les variables build-time : la cle OpenAI a fuite
+# par la.
+STATIC_FILES = {
+    "/": ("index.html", "text/html; charset=utf-8"),
+    "/index.html": ("index.html", "text/html; charset=utf-8"),
+    "/favicon.svg": ("favicon.svg", "image/svg+xml"),
+}
+
+# IP ou reseau (CIDR) du reverse proxy, ex. 10.0.0.0/8 derriere Coolify.
+_proxy_raw = os.environ.get("TRUSTED_PROXY", "").strip()
+TRUSTED_PROXY = ipaddress.ip_network(_proxy_raw, strict=False) if _proxy_raw else None
 ADMIN_KEY = os.environ.get("ADMIN_KEY", "").strip()
 MAX_NAME_LENGTH = 30
 NAME_PATTERN = re.compile(r"^[a-zA-ZÀ-ÿ\s\-']+$")
@@ -69,12 +91,12 @@ def sanitize_name(raw: str) -> str | None:
     return name
 
 
-class Handler(SimpleHTTPRequestHandler):
+class Handler(BaseHTTPRequestHandler):
 
     def get_client_ip(self):
         # Only trust X-Forwarded-For if TRUSTED_PROXY is configured
         # and the direct connection comes from the trusted proxy
-        if TRUSTED_PROXY and self.client_address[0] == TRUSTED_PROXY:
+        if TRUSTED_PROXY and ipaddress.ip_address(self.client_address[0]) in TRUSTED_PROXY:
             forwarded = self.headers.get("X-Forwarded-For", "")
             if forwarded:
                 return forwarded.split(",")[0].strip()
@@ -98,7 +120,7 @@ class Handler(SimpleHTTPRequestHandler):
             # Protected by ADMIN_KEY
             params = parse_qs(parsed.query)
             key = params.get("key", [""])[0]
-            if not ADMIN_KEY or key != ADMIN_KEY:
+            if not ADMIN_KEY or not hmac.compare_digest(key.encode(), ADMIN_KEY.encode()):
                 self.send_json({"error": "Forbidden"}, 403)
                 return
             self.send_json(load_visitors())
@@ -120,8 +142,30 @@ class Handler(SimpleHTTPRequestHandler):
                     return
             self.send_json({"error": "Aucun message trouve pour ce prenom"}, 404)
 
+        elif parsed.path in STATIC_FILES:
+            self.send_static(*STATIC_FILES[parsed.path])
+
         else:
-            super().do_GET()
+            self.send_json({"error": "Not found"}, 404)
+
+    def do_HEAD(self):
+        parsed = urlparse(self.path)
+        if parsed.path in STATIC_FILES:
+            self.send_static(*STATIC_FILES[parsed.path], head_only=True)
+        else:
+            self.send_response(404)
+            self.end_headers()
+
+    def send_static(self, filename, content_type, head_only=False):
+        with open(os.path.join(APP_DIR, filename), "rb") as f:
+            body = f.read()
+        self.send_response(200)
+        self.send_header("Content-Type", content_type)
+        self.send_header("Content-Length", str(len(body)))
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.end_headers()
+        if not head_only:
+            self.wfile.write(body)
 
     # ---- POST ----
     def do_POST(self):
@@ -132,7 +176,14 @@ class Handler(SimpleHTTPRequestHandler):
                 self.send_json({"error": "Request too large"}, 413)
                 return
 
-            body = json.loads(self.rfile.read(length))
+            try:
+                body = json.loads(self.rfile.read(length))
+            except (ValueError, UnicodeDecodeError):
+                self.send_json({"error": "JSON invalide"}, 400)
+                return
+            if not isinstance(body, dict):
+                self.send_json({"error": "JSON invalide"}, 400)
+                return
             raw_name = body.get("name", "")
 
             # Validate name (anti prompt injection + sanity)
@@ -203,8 +254,7 @@ class Handler(SimpleHTTPRequestHandler):
 
             self.send_json({"ok": True, "message": message})
         else:
-            self.send_response(404)
-            self.end_headers()
+            self.send_json({"error": "Not found"}, 404)
 
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))

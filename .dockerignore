@@ -1,0 +1,7 @@
+.git
+.env
+.claude
+data/
+visitors.json
+__pycache__/
+*.png
